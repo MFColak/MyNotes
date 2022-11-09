@@ -25,8 +25,7 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
     private lateinit var databaseReference: DatabaseReference
     private lateinit var navController: NavController
     private lateinit var binding: FragmentHomePageBinding
-    private lateinit var binding2: EachItemBinding
-    private lateinit var popupFragment: AddNotePopupFragment
+    private var popupFragment: AddNotePopupFragment?= null
     private lateinit var adapter: MyNotesAdapter
     private lateinit var mutableList: MutableList<MyNotesData>
 
@@ -48,11 +47,13 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
 
     private fun newNoteEvents() {
         binding.addNoteBtn.setOnClickListener{
+            if (popupFragment != null)
+                childFragmentManager.beginTransaction().remove(popupFragment!!).commit()
             popupFragment = AddNotePopupFragment()
             popupFragment!!.setListener(this)
-            popupFragment.show(
+            popupFragment!!.show(
                 childFragmentManager,
-                "AddNotePopupFragment"
+                AddNotePopupFragment.TAG
             )
         }
     }
@@ -113,13 +114,37 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
             if (it.isSuccessful){
 
                 Toast.makeText(context, "Note saved succesfully", Toast.LENGTH_SHORT).show()
-                titleEditText.text = null
-                noteEditText.text = null
+
 
             }else{
                 Toast.makeText(context, it.exception?.message, Toast.LENGTH_SHORT).show()
             }
-            popupFragment.dismiss()
+            titleEditText.text = null
+            noteEditText.text = null
+            popupFragment?.dismiss()
+        }
+    }
+
+    override fun onUpdateTask(
+        myNotesData: MyNotesData,
+        titleEditText: TextInputEditText,
+        myNotesData2: MyNotesData,
+        noteEditText: TextInputEditText
+    ) {
+        val map = HashMap<String, Any>()
+       // map[myNotesData.taskId] = myNotesData.taskId
+        map["Title"] = myNotesData.Title
+        map["Description"] = myNotesData2.Description
+        databaseReference.updateChildren(map).addOnCompleteListener{
+            if (it.isSuccessful){
+                Toast.makeText(context, "Updated Successfully", Toast.LENGTH_SHORT).show()
+
+            }else{
+                Toast.makeText(context, it.exception?.message, Toast.LENGTH_SHORT).show()
+            }
+            titleEditText.text = null
+            noteEditText.text = null
+            popupFragment!!.dismiss()
         }
     }
 
@@ -135,7 +160,13 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
     }
 
     override fun onEditTaskBtnClicked(myNotesData: MyNotesData) {
-        TODO("Not yet implemented")
+        if (popupFragment != null){
+            childFragmentManager.beginTransaction().remove(popupFragment!!).commit()
+
+            popupFragment = AddNotePopupFragment.newInstance(myNotesData.taskId, myNotesData.Title, myNotesData.Description)
+            popupFragment!!.setListener(this)
+            popupFragment!!.show(childFragmentManager, AddNotePopupFragment.TAG)
+        }
     }
 
 }

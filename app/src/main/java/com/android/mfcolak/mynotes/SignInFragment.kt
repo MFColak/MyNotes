@@ -31,6 +31,7 @@ class SignInFragment : Fragment() {
 
         init(view)
         registerEvents()
+
     }
 
     private fun registerEvents() {
