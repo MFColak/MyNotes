@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.android.mfcolak.mynotes.databinding.FragmentSignInBinding
-import com.android.mfcolak.mynotes.databinding.FragmentSignUpBinding
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 

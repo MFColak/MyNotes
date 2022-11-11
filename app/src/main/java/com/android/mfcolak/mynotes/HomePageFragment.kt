@@ -9,14 +9,12 @@ import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.mfcolak.mynotes.databinding.EachItemBinding
 import com.android.mfcolak.mynotes.databinding.FragmentHomePageBinding
 import com.android.mfcolak.mynotes.util.MyNotesAdapter
 import com.android.mfcolak.mynotes.util.MyNotesData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlin.jvm.internal.Ref.ObjectRef
 
 class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickListener,
     MyNotesAdapter.MyNotesAdapterClicksInterface {
@@ -32,7 +30,7 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomePageBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -125,6 +123,7 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
         }
     }
 
+
     override fun onUpdateTask(
         myNotesData: MyNotesData,
         titleEditText: TextInputEditText,
@@ -132,10 +131,9 @@ class HomePageFragment : Fragment(), AddNotePopupFragment.DialogAddNoteBtnClickL
         noteEditText: TextInputEditText
     ) {
         val map = HashMap<String, Any>()
-       // map[myNotesData.taskId] = myNotesData.taskId
-        map["Title"] = myNotesData.Title
+       map["Title"] = myNotesData.Title
         map["Description"] = myNotesData2.Description
-        databaseReference.updateChildren(map).addOnCompleteListener{
+        databaseReference.child(myNotesData.taskId).updateChildren(map).addOnCompleteListener{
             if (it.isSuccessful){
                 Toast.makeText(context, "Updated Successfully", Toast.LENGTH_SHORT).show()
 
